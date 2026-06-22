@@ -7,27 +7,330 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --pink-hot: #ec4899; --lilac-mid: #c084fc; --lilac-deep: #a855f7;
-      --glass-bg: rgba(255,255,255,0.55); --glass-blur: blur(18px);
-      --transition: all 0.35s cubic-bezier(.4,0,.2,1);
+      --pink-soft:   #f9a8d4;
+      --pink-mid:    #f472b6;
+      --pink-hot:    #ec4899;
+      --lilac-light: #e9d5ff;
+      --lilac-mid:   #c084fc;
+      --lilac-deep:  #a855f7;
+      --rose-bg:     #fdf2f8;
+      --white:       #ffffff;
+      --text-dark:   #3b1051;
+      --text-mid:    #7c3aed;
+      --shadow:      0 8px 32px rgba(168,85,247,.18);
+      --radius:      24px;
+      --glass-bg:    rgba(255,255,255,0.55);
+      --glass-blur:  blur(18px);
+      --transition:  all 0.35s cubic-bezier(.4,0,.2,1);
     }
-    html, body { min-height: 100dvh; font-family: 'Nunito', sans-serif; background: linear-gradient(135deg, #fdf2f8 0%, #f5d0fe 40%, #ede9fe 100%); color: #3b1051; overflow-x: hidden; }
-    #fx-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
-    .screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100dvh; padding: 32px 20px; text-align: center; animation: fadeIn .5s ease forwards; }
+
+    html, body {
+      min-height: 100%;
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #fdf2f8 0%, #f5d0fe 40%, #ede9fe 100%);
+      color: var(--text-dark);
+      overflow-x: hidden;
+    }
+
+    #fx-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: 32px 20px 48px;
+      text-align: center;
+      animation: fadeIn .5s ease forwards;
+    }
     .screen.active { display: flex; }
-    .card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border-radius: 24px; padding: 36px 28px; width: 100%; max-width: 420px; box-shadow: 0 8px 32px rgba(168,85,247,.18); }
-    .title { font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, var(--pink-hot), var(--lilac-deep)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .btn { cursor: pointer; border: none; border-radius: 50px; padding: 14px 36px; font-weight: 800; transition: var(--transition); }
-    .btn-yes { background: var(--pink-hot); color: #fff; }
-    .styled-input { width: 100%; padding: 13px; border: 2px solid var(--lilac-mid); border-radius: 14px; margin: 10px 0; }
-    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
-    .option-btn { background: rgba(255,255,255,.7); border: 2px solid var(--lilac-mid); padding: 10px; border-radius: 12px; cursor: pointer; }
-    .option-btn.selected { background: var(--lilac-mid); color: white; }
-    .summary-row { background: rgba(255,255,255,.6); padding: 10px; border-radius: 10px; margin: 5px 0; text-align: left; }
-    .heart-float { position: fixed; pointer-events: none; animation: floatUp linear forwards; }
-    @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-100vh); opacity: 0; } }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1.5px solid rgba(255,255,255,.7);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 36px 28px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .title {
+      font-size: clamp(1.5rem, 6vw, 2rem);
+      font-weight: 900;
+      line-height: 1.25;
+      background: linear-gradient(135deg, var(--pink-hot), var(--lilac-deep));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 1rem;
+      color: var(--text-mid);
+      margin-bottom: 28px;
+      font-weight: 600;
+    }
+
+    .emoji-big {
+      font-size: clamp(3rem, 14vw, 5rem);
+      display: inline-block;
+      animation: bounce 0.7s infinite alternate ease-in-out;
+      margin-bottom: 12px;
+    }
+    @keyframes bounce {
+      from { transform: translateY(0) scale(1); }
+      to   { transform: translateY(-14px) scale(1.08); }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      border-radius: 50px;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: var(--transition);
+      padding: 14px 36px;
+      letter-spacing: .02em;
+    }
+    .btn-yes {
+      background: linear-gradient(135deg, var(--pink-hot), var(--lilac-deep));
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(236,72,153,.35);
+    }
+    .btn-yes:hover, .btn-yes:active {
+      transform: scale(1.07);
+      box-shadow: 0 8px 28px rgba(236,72,153,.5);
+    }
+    .btn-next {
+      background: linear-gradient(135deg, var(--lilac-mid), var(--pink-hot));
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(168,85,247,.3);
+      width: 100%;
+      margin-top: 24px;
+      padding: 16px;
+      font-size: 1.1rem;
+    }
+    .btn-next:hover, .btn-next:active {
+      transform: scale(1.04);
+      box-shadow: 0 8px 28px rgba(168,85,247,.45);
+    }
+    .btn-confirm {
+      background: linear-gradient(135deg, #fb923c, var(--pink-hot), var(--lilac-deep));
+      background-size: 200% 200%;
+      animation: gradMove 2.5s ease infinite;
+      color: #fff;
+      width: 100%;
+      margin-top: 28px;
+      padding: 18px;
+      font-size: 1.2rem;
+      border-radius: 50px;
+      box-shadow: 0 6px 24px rgba(236,72,153,.4);
+      border: none;
+      font-family: inherit;
+      font-weight: 900;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-confirm:hover, .btn-confirm:active { transform: scale(1.05); }
+    @keyframes gradMove {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #btn-no-wrap {
+      position: relative;
+      display: inline-block;
+    }
+    #btn-no {
+      background: var(--glass-bg);
+      border: 2px solid var(--pink-soft);
+      color: var(--pink-hot);
+      position: relative;
+      transition: background .2s, color .2s;
+    }
+    #btn-no:hover { background: #ffe4f0; }
+
+    .buttons-row {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      margin-top: 4px;
+    }
+    .input-label {
+      font-size: .85rem;
+      font-weight: 700;
+      color: var(--lilac-deep);
+      margin-bottom: 4px;
+      text-align: left;
+      display: block;
+    }
+    .styled-input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 2px solid var(--lilac-light);
+      border-radius: 14px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      background: rgba(255,255,255,.8);
+      outline: none;
+      transition: var(--transition);
+      -webkit-appearance: none;
+    }
+    .styled-input:focus {
+      border-color: var(--lilac-mid);
+      box-shadow: 0 0 0 3px rgba(192,132,252,.25);
+    }
+
+    .section-label {
+      font-size: .95rem;
+      font-weight: 800;
+      color: var(--lilac-deep);
+      text-align: left;
+      margin: 20px 0 10px;
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .option-btn {
+      background: rgba(255,255,255,.7);
+      border: 2.5px solid var(--lilac-light);
+      border-radius: 16px;
+      padding: 14px 10px;
+      font-family: inherit;
+      font-size: .92rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .option-btn .opt-emoji { font-size: 1.8rem; }
+    .option-btn:hover {
+      border-color: var(--lilac-mid);
+      background: rgba(233,213,255,.5);
+    }
+    .option-btn.selected {
+      border-color: var(--pink-hot);
+      background: linear-gradient(135deg, rgba(249,168,212,.35), rgba(192,132,252,.35));
+      box-shadow: 0 0 0 3px rgba(236,72,153,.2), 0 0 16px rgba(236,72,153,.15);
+      animation: selectPulse .4s ease;
+    }
+    @keyframes selectPulse {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+
+    .summary-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,.6);
+      border: 1.5px solid var(--lilac-light);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .summary-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .summary-detail strong {
+      display: block;
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--lilac-deep);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .summary-detail span {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+
+    .heart-float {
+      position: fixed;
+      font-size: 1.4rem;
+      pointer-events: none;
+      animation: floatUp linear forwards;
+      z-index: 0;
+      user-select: none;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(0) scale(.8) rotate(-10deg); opacity: .9; }
+      100% { transform: translateY(-110vh) scale(1.2) rotate(10deg); opacity: 0; }
+    }
+
+    .divider {
+      width: 48px;
+      height: 4px;
+      background: linear-gradient(135deg, var(--pink-hot), var(--lilac-mid));
+      border-radius: 4px;
+      margin: 0 auto 20px;
+    }
+
+    /* Botão WhatsApp na tela 4 */
+    .btn-whatsapp {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #25d366, #128c7e);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-family: inherit;
+      font-weight: 900;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 16px 28px;
+      width: 100%;
+      margin-top: 20px;
+      box-shadow: 0 6px 24px rgba(37,211,102,.35);
+      transition: var(--transition);
+      text-decoration: none;
+    }
+    .btn-whatsapp:hover, .btn-whatsapp:active {
+      transform: scale(1.04);
+      box-shadow: 0 8px 30px rgba(37,211,102,.5);
+    }
   </style>
 </head>
 <body>
@@ -36,87 +339,371 @@
 
 <section id="screen-1" class="screen active">
   <div class="card">
+    <div class="emoji-big">🥺</div>
     <h1 class="title">Você aceita sair comigo?</h1>
-    <div style="margin-top: 20px;">
-      <button class="btn btn-yes" onclick="handleYes()">Sim 💕</button>
-      <button class="btn" id="btn-no" style="margin-left: 10px;">Não 🙈</button>
+    <p class="subtitle">Pensa bem antes de apertar o "Não"… 👀</p>
+    <div class="divider"></div>
+    <div class="buttons-row">
+      <button class="btn btn-yes" id="btn-yes" onclick="handleYes()">Sim 💕</button>
+      <div id="btn-no-wrap">
+        <button class="btn" id="btn-no">Não 🙈</button>
+      </div>
     </div>
   </div>
 </section>
 
 <section id="screen-2" class="screen">
   <div class="card">
-    <h1 class="title">Quando?</h1>
-    <input id="date-input" type="date" class="styled-input" />
-    <input id="time-input" type="time" class="styled-input" />
-    <button class="btn btn-yes" onclick="handleDate()">Avançar</button>
+    <div class="emoji-big">🎉</div>
+    <h1 class="title">Você disse SIM! ❤️</h1>
+    <p class="subtitle">Quando você está livre para o nosso rolê?</p>
+    <div class="divider"></div>
+    <div class="input-group">
+      <div>
+        <label class="input-label" for="date-input">📅 Escolha o dia</label>
+        <input id="date-input" type="date" class="styled-input" />
+      </div>
+      <div>
+        <label class="input-label" for="time-input">⏰ Que horas?</label>
+        <input id="time-input" type="time" class="styled-input" />
+      </div>
+    </div>
+    <button class="btn btn-next" onclick="handleDate()">Avançar ✨</button>
   </div>
 </section>
 
 <section id="screen-3" class="screen">
   <div class="card">
-    <h1 class="title">Preferências</h1>
-    <p>Comida:</p>
+    <h1 class="title">Agora, as preferências 🌈</h1>
+    <p class="subtitle">Me conta o que você tá afim!</p>
+    <div class="divider"></div>
+
+    <p class="section-label">🍽️ O que você está afim de comer?</p>
     <div class="options-grid" id="food-options">
-      <button class="option-btn" data-group="food" onclick="selectOption(this)">Sushi 🍣</button>
-      <button class="option-btn" data-group="food" onclick="selectOption(this)">Pizza 🍕</button>
+      <button class="option-btn" data-group="food" onclick="selectOption(this)">
+        <span class="opt-emoji">🍣</span>Sushi
+      </button>
+      <button class="option-btn" data-group="food" onclick="selectOption(this)">
+        <span class="opt-emoji">🍔</span>Hambúrguer
+      </button>
+      <button class="option-btn" data-group="food" onclick="selectOption(this)">
+        <span class="opt-emoji">🍕</span>Pizza
+      </button>
+      <button class="option-btn" data-group="food" onclick="selectOption(this)">
+        <span class="opt-emoji">🌮</span>Taco
+      </button>
     </div>
-    <p>Vibe:</p>
+
+    <p class="section-label">📍 Qual é a vibe do lugar?</p>
     <div class="options-grid" id="vibe-options">
-      <button class="option-btn" data-group="vibe" onclick="selectOption(this)">Praia 🏖️</button>
-      <button class="option-btn" data-group="vibe" onclick="selectOption(this)">Cinema 🎬</button>
+      <button class="option-btn" data-group="vibe" onclick="selectOption(this)">
+        <span class="opt-emoji">🏖️</span>Praia
+      </button>
+      <button class="option-btn" data-group="vibe" onclick="selectOption(this)">
+        <span class="opt-emoji">🎬</span>Cinema
+      </button>
+      <button class="option-btn" data-group="vibe" onclick="selectOption(this)">
+        <span class="opt-emoji">🏔️</span>Montanha
+      </button>
+      <button class="option-btn" data-group="vibe" onclick="selectOption(this)">
+        <span class="opt-emoji">🛍️</span>Shopping
+      </button>
     </div>
-    <button class="btn btn-yes" onclick="handlePrefs()">Bora!!! 🚀</button>
+
+    <button class="btn-confirm" onclick="handlePrefs()">Bora!!! 🚀</button>
   </div>
 </section>
 
 <section id="screen-4" class="screen">
   <div class="card">
-    <h1 class="title">Tudo combinado!</h1>
+    <div class="emoji-big" style="animation-duration:0.5s">🗓️</div>
+    <h1 class="title">Tudo combinado! ✨</h1>
+    <p class="subtitle">Mal posso esperar pelo nosso rolê 💕</p>
+    <div class="divider"></div>
     <div id="summary-content"></div>
+    <!-- Botão gerado dinamicamente pelo JS -->
   </div>
 </section>
 
 <script>
-  const state = { date: '', time: '', food: '', vibe: '' };
-  const btnNo = document.getElementById('btn-no');
+  /* ================================================
+     CONFIGURAÇÃO — altere só esta linha se precisar
+  ================================================ */
+  const WHATSAPP_NUMBER = '5511973513832'; // número que recebe as respostas
 
+  /* ================================================
+     ESTADO DA APLICAÇÃO
+  ================================================ */
+  const state = {
+    date: '',
+    time: '',
+    food: '',
+    vibe: ''
+  };
+
+  /* ================================================
+     TROCA DE TELAS
+  ================================================ */
   function goTo(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   }
 
-  function handleYes() { goTo('screen-2'); }
+  /* ================================================
+     TELA 1 — LÓGICA DO BOTÃO NÃO (FOGE)
+  ================================================ */
+  const btnNo = document.getElementById('btn-no');
 
-  btnNo.addEventListener('mouseover', () => {
+  function escapeButton(clientX, clientY) {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const margin = 24;
+    const bw = btnNo.offsetWidth + 8;
+    const bh = btnNo.offsetHeight + 8;
+
+    let newX = (clientX < vw / 2)
+      ? vw - bw - margin - Math.random() * 80
+      : margin + Math.random() * 80;
+    let newY = (clientY < vh / 2)
+      ? vh - bh - margin - Math.random() * 80
+      : margin + Math.random() * 80;
+
+    newX = Math.max(margin, Math.min(newX, vw - bw - margin));
+    newY = Math.max(margin, Math.min(newY, vh - bh - margin));
+
     btnNo.style.position = 'fixed';
-    btnNo.style.left = Math.random() * 80 + 'vw';
-    btnNo.style.top = Math.random() * 80 + 'vh';
-  });
+    btnNo.style.left  = newX + 'px';
+    btnNo.style.top   = newY + 'px';
+    btnNo.style.zIndex = 100;
+  }
 
+  btnNo.addEventListener('mouseenter', e => escapeButton(e.clientX, e.clientY));
+  btnNo.addEventListener('touchstart', e => {
+    const t = e.touches[0];
+    escapeButton(t.clientX, t.clientY);
+    e.preventDefault();
+  }, { passive: false });
+
+  /* ================================================
+     TELA 1 — CLICOU EM SIM
+  ================================================ */
+  function handleYes() {
+    btnNo.style.position = '';
+    btnNo.style.left = '';
+    btnNo.style.top  = '';
+    launchConfetti();
+    setTimeout(() => goTo('screen-2'), 900);
+  }
+
+  /* ================================================
+     TELA 2 — AVANÇAR
+  ================================================ */
   function handleDate() {
-    state.date = document.getElementById('date-input').value;
-    state.time = document.getElementById('time-input').value;
-    if(!state.date || !state.time) return alert('Preencha tudo!');
+    const d = document.getElementById('date-input').value;
+    const t = document.getElementById('time-input').value;
+    if (!d || !t) { shakeCard('screen-2'); return; }
+    state.date = d;
+    state.time = t;
     goTo('screen-3');
   }
 
-  function selectOption(btn) {
-    document.querySelectorAll(`.option-btn[data-group="${btn.dataset.group}"]`).forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    state[btn.dataset.group] = btn.innerText;
+  function shakeCard(screenId) {
+    const card = document.querySelector(`#${screenId} .card`);
+    card.style.animation = 'none';
+    card.style.transform = 'translateX(-8px)';
+    setTimeout(() => card.style.transform = 'translateX(8px)', 80);
+    setTimeout(() => card.style.transform = 'translateX(-6px)', 160);
+    setTimeout(() => card.style.transform = 'translateX(0)', 240);
   }
 
+  /* ================================================
+     TELA 3 — SELECIONAR OPÇÃO
+  ================================================ */
+  function selectOption(btn) {
+    const group = btn.dataset.group;
+    document.querySelectorAll(`.option-btn[data-group="${group}"]`)
+      .forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    state[group] = btn.innerText.trim();
+  }
+
+  /* ================================================
+     TELA 3 — CONFIRMAR PREFERÊNCIAS + ABRIR WHATSAPP
+  ================================================ */
   function handlePrefs() {
-    if(!state.food || !state.vibe) return alert('Escolha as opções!');
-    
-    const msg = `Aceitei o convite! Data: ${state.date} às ${state.time}. Escolhi: ${state.food} e ${state.vibe}`;
-    const url = `https://wa.me/5511973513832?text=${encodeURIComponent(msg)}`;
-    window.open(url, '_blank');
-    
-    document.getElementById('summary-content').innerHTML = `<p>${msg}</p>`;
+    if (!state.food || !state.vibe) { shakeCard('screen-3'); return; }
+
+    buildSummary();
     goTo('screen-4');
+    startHeartsRain();
+
+    // Monta a mensagem que será enviada no WhatsApp
+    const dateObj = new Date(state.date + 'T' + state.time);
+    const dateStr = dateObj.toLocaleDateString('pt-BR', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    const timeStr = dateObj.toLocaleTimeString('pt-BR', {
+      hour: '2-digit', minute: '2-digit'
+    });
+
+    const msg =
+      `💌 *Ela disse SIM!*\n\n` +
+      `📅 *Dia:* ${dateStr}\n` +
+      `⏰ *Horário:* ${timeStr}\n` +
+      `🍽️ *Comida:* ${state.food}\n` +
+      `📍 *Vibe:* ${state.vibe}\n\n` +
+      `Mal posso esperar! 💕`;
+
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+
+    // Adiciona o botão do WhatsApp embaixo do resumo
+    const card = document.querySelector('#screen-4 .card');
+    const existing = card.querySelector('.btn-whatsapp');
+    if (!existing) {
+      const btn = document.createElement('a');
+      btn.href = url;
+      btn.target = '_blank';
+      btn.rel = 'noopener noreferrer';
+      btn.className = 'btn-whatsapp';
+      btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Confirmar pelo WhatsApp`;
+      card.appendChild(btn);
+    }
+  }
+
+  /* ================================================
+     TELA 4 — MONTAR RESUMO
+  ================================================ */
+  function buildSummary() {
+    const dateObj = new Date(state.date + 'T' + state.time);
+    const dateStr = dateObj.toLocaleDateString('pt-BR', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    const timeStr = dateObj.toLocaleTimeString('pt-BR', {
+      hour: '2-digit', minute: '2-digit'
+    });
+
+    document.getElementById('summary-content').innerHTML = `
+      <div class="summary-row">
+        <span class="summary-icon">📅</span>
+        <div class="summary-detail">
+          <strong>Dia</strong>
+          <span>${dateStr}</span>
+        </div>
+      </div>
+      <div class="summary-row">
+        <span class="summary-icon">⏰</span>
+        <div class="summary-detail">
+          <strong>Horário</strong>
+          <span>${timeStr}</span>
+        </div>
+      </div>
+      <div class="summary-row">
+        <span class="summary-icon">🍽️</span>
+        <div class="summary-detail">
+          <strong>Comida escolhida</strong>
+          <span>${state.food}</span>
+        </div>
+      </div>
+      <div class="summary-row">
+        <span class="summary-icon">📍</span>
+        <div class="summary-detail">
+          <strong>A vibe</strong>
+          <span>${state.vibe}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  /* ================================================
+     EFEITO DE CONFETES (Canvas)
+  ================================================ */
+  const canvas = document.getElementById('fx-canvas');
+  const ctx    = canvas.getContext('2d');
+  let particles = [];
+  let animId   = null;
+
+  function resizeCanvas() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  const CONFETTI_COLORS = [
+    '#f472b6','#a855f7','#fb923c','#facc15','#34d399','#60a5fa','#f9a8d4','#c084fc'
+  ];
+
+  function launchConfetti() {
+    particles = [];
+    for (let i = 0; i < 120; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: -10,
+        r: Math.random() * 6 + 4,
+        color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+        vx: (Math.random() - 0.5) * 3,
+        vy: Math.random() * 3 + 2,
+        angle: Math.random() * 360,
+        spin: (Math.random() - 0.5) * 6,
+        shape: Math.random() < 0.5 ? 'rect' : 'circle',
+        life: 1
+      });
+    }
+    if (animId) cancelAnimationFrame(animId);
+    drawConfetti();
+  }
+
+  function drawConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles = particles.filter(p => p.life > 0.05);
+    particles.forEach(p => {
+      ctx.save();
+      ctx.globalAlpha = p.life;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      if (p.shape === 'rect') ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r);
+      else { ctx.beginPath(); ctx.arc(0, 0, p.r, 0, Math.PI * 2); ctx.fill(); }
+      ctx.restore();
+      p.x += p.vx;
+      p.y += p.vy;
+      p.angle += p.spin;
+      p.vy += 0.07;
+      p.life -= 0.008;
+    });
+    if (particles.length) animId = requestAnimationFrame(drawConfetti);
+    else { ctx.clearRect(0, 0, canvas.width, canvas.height); animId = null; }
+  }
+
+  /* ================================================
+     CHUVA DE CORAÇÕES FLUTUANTES (Tela 4)
+  ================================================ */
+  const HEARTS = ['💕','💖','💗','💓','💝','🩷','❤️','✨'];
+  let heartInterval = null;
+
+  function startHeartsRain() {
+    if (heartInterval) clearInterval(heartInterval);
+    document.querySelectorAll('.heart-float').forEach(h => h.remove());
+
+    heartInterval = setInterval(() => {
+      if (!document.getElementById('screen-4').classList.contains('active')) {
+        clearInterval(heartInterval);
+        return;
+      }
+      const el = document.createElement('span');
+      el.className = 'heart-float';
+      el.textContent = HEARTS[Math.floor(Math.random() * HEARTS.length)];
+      el.style.left  = Math.random() * 100 + 'vw';
+      el.style.bottom = '-10px';
+      const dur = (Math.random() * 4 + 4).toFixed(1);
+      el.style.animationDuration = dur + 's';
+      el.style.fontSize = (Math.random() * 1.2 + 0.8).toFixed(1) + 'rem';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), parseFloat(dur) * 1000 + 200);
+    }, 300);
   }
 </script>
 </body>
 </html>
+ 
