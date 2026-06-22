@@ -6,743 +6,116 @@
   <title>💌 Um Pedido Especial</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
-    /* ================================================
-       RESET & BASE
-    ================================================ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
- 
     :root {
-      --pink-soft:   #f9a8d4;
-      --pink-mid:    #f472b6;
-      --pink-hot:    #ec4899;
-      --lilac-light: #e9d5ff;
-      --lilac-mid:   #c084fc;
-      --lilac-deep:  #a855f7;
-      --rose-bg:     #fdf2f8;
-      --white:       #ffffff;
-      --text-dark:   #3b1051;
-      --text-mid:    #7c3aed;
-      --shadow:      0 8px 32px rgba(168,85,247,.18);
-      --radius:      24px;
-      --glass-bg:    rgba(255,255,255,0.55);
-      --glass-blur:  blur(18px);
-      --transition:  all 0.35s cubic-bezier(.4,0,.2,1);
+      --pink-hot: #ec4899; --lilac-mid: #c084fc; --lilac-deep: #a855f7;
+      --glass-bg: rgba(255,255,255,0.55); --glass-blur: blur(18px);
+      --transition: all 0.35s cubic-bezier(.4,0,.2,1);
     }
- 
-    html, body {
-      min-height: 100%;
-      font-family: 'Nunito', sans-serif;
-      background: linear-gradient(135deg, #fdf2f8 0%, #f5d0fe 40%, #ede9fe 100%);
-      color: var(--text-dark);
-      overflow-x: hidden;
-    }
- 
-    /* ================================================
-       CANVAS DE CONFETES / CORAÇÕES
-    ================================================ */
-    #fx-canvas {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 999;
-    }
- 
-    /* ================================================
-       TELAS
-    ================================================ */
-    .screen {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100dvh;
-      padding: 32px 20px 48px;
-      text-align: center;
-      animation: fadeIn .5s ease forwards;
-    }
+    html, body { min-height: 100dvh; font-family: 'Nunito', sans-serif; background: linear-gradient(135deg, #fdf2f8 0%, #f5d0fe 40%, #ede9fe 100%); color: #3b1051; overflow-x: hidden; }
+    #fx-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
+    .screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100dvh; padding: 32px 20px; text-align: center; animation: fadeIn .5s ease forwards; }
     .screen.active { display: flex; }
- 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
- 
-    /* ================================================
-       CARD (GLASSMORPHISM)
-    ================================================ */
-    .card {
-      background: var(--glass-bg);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1.5px solid rgba(255,255,255,.7);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 36px 28px;
-      width: 100%;
-      max-width: 420px;
-    }
- 
-    /* ================================================
-       TIPOGRAFIA
-    ================================================ */
-    .title {
-      font-size: clamp(1.5rem, 6vw, 2rem);
-      font-weight: 900;
-      line-height: 1.25;
-      background: linear-gradient(135deg, var(--pink-hot), var(--lilac-deep));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 8px;
-    }
-    .subtitle {
-      font-size: 1rem;
-      color: var(--text-mid);
-      margin-bottom: 28px;
-      font-weight: 600;
-    }
- 
-    /* ================================================
-       EMOJI ANIMADO (BOUNCE)
-    ================================================ */
-    .emoji-big {
-      font-size: clamp(3rem, 14vw, 5rem);
-      display: inline-block;
-      animation: bounce 0.7s infinite alternate ease-in-out;
-      margin-bottom: 12px;
-    }
-    @keyframes bounce {
-      from { transform: translateY(0) scale(1); }
-      to   { transform: translateY(-14px) scale(1.08); }
-    }
- 
-    /* ================================================
-       BOTÕES PRIMÁRIOS
-    ================================================ */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border: none;
-      border-radius: 50px;
-      font-family: inherit;
-      font-weight: 800;
-      font-size: 1.05rem;
-      cursor: pointer;
-      transition: var(--transition);
-      padding: 14px 36px;
-      letter-spacing: .02em;
-    }
-    .btn-yes {
-      background: linear-gradient(135deg, var(--pink-hot), var(--lilac-deep));
-      color: #fff;
-      box-shadow: 0 4px 20px rgba(236,72,153,.35);
-    }
-    .btn-yes:hover, .btn-yes:active {
-      transform: scale(1.07);
-      box-shadow: 0 8px 28px rgba(236,72,153,.5);
-    }
-    .btn-next {
-      background: linear-gradient(135deg, var(--lilac-mid), var(--pink-hot));
-      color: #fff;
-      box-shadow: 0 4px 20px rgba(168,85,247,.3);
-      width: 100%;
-      margin-top: 24px;
-      padding: 16px;
-      font-size: 1.1rem;
-    }
-    .btn-next:hover, .btn-next:active {
-      transform: scale(1.04);
-      box-shadow: 0 8px 28px rgba(168,85,247,.45);
-    }
-    .btn-confirm {
-      background: linear-gradient(135deg, #fb923c, var(--pink-hot), var(--lilac-deep));
-      background-size: 200% 200%;
-      animation: gradMove 2.5s ease infinite;
-      color: #fff;
-      width: 100%;
-      margin-top: 28px;
-      padding: 18px;
-      font-size: 1.2rem;
-      border-radius: 50px;
-      box-shadow: 0 6px 24px rgba(236,72,153,.4);
-      border: none;
-      font-family: inherit;
-      font-weight: 900;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    .btn-confirm:hover, .btn-confirm:active { transform: scale(1.05); }
-    @keyframes gradMove {
-      0%   { background-position: 0% 50%; }
-      50%  { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
- 
-    /* ================================================
-       TELA 1 — BOTÃO NÃO (FOGE)
-    ================================================ */
-    #btn-no-wrap {
-      position: relative;
-      display: inline-block;
-    }
-    #btn-no {
-      background: var(--glass-bg);
-      border: 2px solid var(--pink-soft);
-      color: var(--pink-hot);
-      position: relative;
-      transition: background .2s, color .2s;
-    }
-    #btn-no:hover { background: #ffe4f0; }
- 
-    .buttons-row {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 8px;
-    }
- 
-    /* ================================================
-       TELA 2 — INPUTS DE DATA/HORA
-    ================================================ */
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      width: 100%;
-      margin-top: 4px;
-    }
-    .input-label {
-      font-size: .85rem;
-      font-weight: 700;
-      color: var(--lilac-deep);
-      margin-bottom: 4px;
-      text-align: left;
-      display: block;
-    }
-    .styled-input {
-      width: 100%;
-      padding: 13px 16px;
-      border: 2px solid var(--lilac-light);
-      border-radius: 14px;
-      font-family: inherit;
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text-dark);
-      background: rgba(255,255,255,.8);
-      outline: none;
-      transition: var(--transition);
-      -webkit-appearance: none;
-    }
-    .styled-input:focus {
-      border-color: var(--lilac-mid);
-      box-shadow: 0 0 0 3px rgba(192,132,252,.25);
-    }
- 
-    /* ================================================
-       TELA 3 — OPÇÕES SELECIONÁVEIS
-    ================================================ */
-    .section-label {
-      font-size: .95rem;
-      font-weight: 800;
-      color: var(--lilac-deep);
-      text-align: left;
-      margin: 20px 0 10px;
-    }
-    .options-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .option-btn {
-      background: rgba(255,255,255,.7);
-      border: 2.5px solid var(--lilac-light);
-      border-radius: 16px;
-      padding: 14px 10px;
-      font-family: inherit;
-      font-size: .92rem;
-      font-weight: 700;
-      color: var(--text-dark);
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-    .option-btn .opt-emoji { font-size: 1.8rem; }
-    .option-btn:hover {
-      border-color: var(--lilac-mid);
-      background: rgba(233,213,255,.5);
-    }
-    .option-btn.selected {
-      border-color: var(--pink-hot);
-      background: linear-gradient(135deg, rgba(249,168,212,.35), rgba(192,132,252,.35));
-      box-shadow: 0 0 0 3px rgba(236,72,153,.2), 0 0 16px rgba(236,72,153,.15);
-      animation: selectPulse .4s ease;
-    }
-    @keyframes selectPulse {
-      0%   { transform: scale(1); }
-      50%  { transform: scale(1.06); }
-      100% { transform: scale(1); }
-    }
- 
-    /* ================================================
-       TELA 4 — RESUMO
-    ================================================ */
-    .summary-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: rgba(255,255,255,.6);
-      border: 1.5px solid var(--lilac-light);
-      border-radius: 14px;
-      padding: 14px 16px;
-      margin-bottom: 10px;
-      text-align: left;
-    }
-    .summary-icon { font-size: 1.5rem; flex-shrink: 0; }
-    .summary-detail strong {
-      display: block;
-      font-size: .78rem;
-      font-weight: 700;
-      color: var(--lilac-deep);
-      text-transform: uppercase;
-      letter-spacing: .06em;
-    }
-    .summary-detail span {
-      font-size: 1rem;
-      font-weight: 800;
-      color: var(--text-dark);
-    }
- 
-    /* ================================================
-       FLOATING HEARTS (Tela 4)
-    ================================================ */
-    .heart-float {
-      position: fixed;
-      font-size: 1.4rem;
-      pointer-events: none;
-      animation: floatUp linear forwards;
-      z-index: 0;
-      user-select: none;
-    }
-    @keyframes floatUp {
-      0%   { transform: translateY(0) scale(.8) rotate(-10deg); opacity: .9; }
-      100% { transform: translateY(-110vh) scale(1.2) rotate(10deg); opacity: 0; }
-    }
- 
-    /* Divider */
-    .divider {
-      width: 48px;
-      height: 4px;
-      background: linear-gradient(135deg, var(--pink-hot), var(--lilac-mid));
-      border-radius: 4px;
-      margin: 0 auto 20px;
-    }
+    .card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border-radius: 24px; padding: 36px 28px; width: 100%; max-width: 420px; box-shadow: 0 8px 32px rgba(168,85,247,.18); }
+    .title { font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, var(--pink-hot), var(--lilac-deep)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .btn { cursor: pointer; border: none; border-radius: 50px; padding: 14px 36px; font-weight: 800; transition: var(--transition); }
+    .btn-yes { background: var(--pink-hot); color: #fff; }
+    .styled-input { width: 100%; padding: 13px; border: 2px solid var(--lilac-mid); border-radius: 14px; margin: 10px 0; }
+    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+    .option-btn { background: rgba(255,255,255,.7); border: 2px solid var(--lilac-mid); padding: 10px; border-radius: 12px; cursor: pointer; }
+    .option-btn.selected { background: var(--lilac-mid); color: white; }
+    .summary-row { background: rgba(255,255,255,.6); padding: 10px; border-radius: 10px; margin: 5px 0; text-align: left; }
+    .heart-float { position: fixed; pointer-events: none; animation: floatUp linear forwards; }
+    @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-100vh); opacity: 0; } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   </style>
 </head>
 <body>
- 
-<!-- Canvas para efeitos de partículas -->
+
 <canvas id="fx-canvas"></canvas>
- 
-<!-- ============================================================
-     TELA 1 — O PEDIDO
-     Para alterar o texto, edite dentro das tags <h1> e <p>
-============================================================ -->
+
 <section id="screen-1" class="screen active">
   <div class="card">
-    <div class="emoji-big">🥺</div>
-    <!-- Altere o título aqui: -->
     <h1 class="title">Você aceita sair comigo?</h1>
-    <p class="subtitle">Pensa bem antes de apertar o "Não"… 👀</p>
-    <div class="divider"></div>
-    <div class="buttons-row">
-      <!-- Botão SIM -->
-      <button class="btn btn-yes" id="btn-yes" onclick="handleYes()">Sim 💕</button>
-      <!-- Botão NÃO — vai fugir do cursor/toque -->
-      <div id="btn-no-wrap">
-        <button class="btn" id="btn-no">Não 🙈</button>
-      </div>
+    <div style="margin-top: 20px;">
+      <button class="btn btn-yes" onclick="handleYes()">Sim 💕</button>
+      <button class="btn" id="btn-no" style="margin-left: 10px;">Não 🙈</button>
     </div>
   </div>
 </section>
- 
-<!-- ============================================================
-     TELA 2 — A DATA
-     Para alterar o texto, edite dentro das tags <h1> e <p>
-============================================================ -->
+
 <section id="screen-2" class="screen">
   <div class="card">
-    <div class="emoji-big">🎉</div>
-    <!-- Altere o título aqui: -->
-    <h1 class="title">Você disse SIM! ❤️</h1>
-    <p class="subtitle">Quando você está livre para o nosso rolê?</p>
-    <div class="divider"></div>
-    <div class="input-group">
-      <div>
-        <label class="input-label" for="date-input">📅 Escolha o dia</label>
-        <input id="date-input" type="date" class="styled-input" />
-      </div>
-      <div>
-        <label class="input-label" for="time-input">⏰ Que horas?</label>
-        <input id="time-input" type="time" class="styled-input" />
-      </div>
-    </div>
-    <button class="btn btn-next" onclick="handleDate()">Avançar ✨</button>
+    <h1 class="title">Quando?</h1>
+    <input id="date-input" type="date" class="styled-input" />
+    <input id="time-input" type="time" class="styled-input" />
+    <button class="btn btn-yes" onclick="handleDate()">Avançar</button>
   </div>
 </section>
- 
-<!-- ============================================================
-     TELA 3 — AS PREFERÊNCIAS
-     Para adicionar/remover opções, duplique ou remova um <button class="option-btn">
-============================================================ -->
+
 <section id="screen-3" class="screen">
   <div class="card">
-    <h1 class="title">Agora, as preferências 🌈</h1>
-    <p class="subtitle">Me conta o que você tá afim!</p>
-    <div class="divider"></div>
- 
-    <!-- Seção Comida -->
-    <p class="section-label">🍽️ O que você está afim de comer?</p>
+    <h1 class="title">Preferências</h1>
+    <p>Comida:</p>
     <div class="options-grid" id="food-options">
-      <button class="option-btn" data-group="food" onclick="selectOption(this)">
-        <span class="opt-emoji">🍣</span>Sushi
-      </button>
-      <button class="option-btn" data-group="food" onclick="selectOption(this)">
-        <span class="opt-emoji">🍔</span>Hambúrguer
-      </button>
-      <button class="option-btn" data-group="food" onclick="selectOption(this)">
-        <span class="opt-emoji">🍕</span>Pizza
-      </button>
-      <button class="option-btn" data-group="food" onclick="selectOption(this)">
-        <span class="opt-emoji">🌮</span>Taco
-      </button>
+      <button class="option-btn" data-group="food" onclick="selectOption(this)">Sushi 🍣</button>
+      <button class="option-btn" data-group="food" onclick="selectOption(this)">Pizza 🍕</button>
     </div>
- 
-    <!-- Seção Lugar -->
-    <p class="section-label">📍 Qual é a vibe do lugar?</p>
+    <p>Vibe:</p>
     <div class="options-grid" id="vibe-options">
-      <button class="option-btn" data-group="vibe" onclick="selectOption(this)">
-        <span class="opt-emoji">🏖️</span>Praia
-      </button>
-      <button class="option-btn" data-group="vibe" onclick="selectOption(this)">
-        <span class="opt-emoji">🎬</span>Cinema
-      </button>
-      <button class="option-btn" data-group="vibe" onclick="selectOption(this)">
-        <span class="opt-emoji">🏔️</span>Montanha
-      </button>
-      <button class="option-btn" data-group="vibe" onclick="selectOption(this)">
-        <span class="opt-emoji">🛍️</span>Shopping
-      </button>
+      <button class="option-btn" data-group="vibe" onclick="selectOption(this)">Praia 🏖️</button>
+      <button class="option-btn" data-group="vibe" onclick="selectOption(this)">Cinema 🎬</button>
     </div>
- 
-    <button class="btn-confirm" onclick="handlePrefs()">Bora!!! 🚀</button>
+    <button class="btn btn-yes" onclick="handlePrefs()">Bora!!! 🚀</button>
   </div>
 </section>
- 
-<!-- ============================================================
-     TELA 4 — O RESUMO
-     Conteúdo preenchido dinamicamente pelo JavaScript
-============================================================ -->
+
 <section id="screen-4" class="screen">
   <div class="card">
-    <div class="emoji-big" style="animation-duration:0.5s">🗓️</div>
-    <h1 class="title">Tudo combinado! ✨</h1>
-    <p class="subtitle">Mal posso esperar pelo nosso rolê 💕</p>
-    <div class="divider"></div>
- 
-    <!-- Resumo preenchido pelo JS -->
+    <h1 class="title">Tudo combinado!</h1>
     <div id="summary-content"></div>
   </div>
 </section>
- 
+
 <script>
-  /* ================================================
-     ESTADO DA APLICAÇÃO
-  ================================================ */
-  const state = {
-    date: '',
-    time: '',
-    food: '',
-    vibe: ''
-  };
- 
-  /* ================================================
-     TROCA DE TELAS
-  ================================================ */
+  const state = { date: '', time: '', food: '', vibe: '' };
+  const btnNo = document.getElementById('btn-no');
+
   function goTo(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    const next = document.getElementById(id);
-    next.classList.add('active');
+    document.getElementById(id).classList.add('active');
   }
- 
-  /* ================================================
-     TELA 1 — LÓGICA DO BOTÃO NÃO (FOGE)
-  ================================================ */
-  const btnNo = document.getElementById('btn-no');
- 
-  function escapeButton(clientX, clientY) {
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const margin = 24;
-    const bw = btnNo.offsetWidth + 8;
-    const bh = btnNo.offsetHeight + 8;
- 
-    // Escolhe um lado oposto ao cursor
-    const side = Math.random() < 0.5 ? 'left' : 'right';
-    let newX = (clientX < vw / 2)
-      ? vw - bw - margin - Math.random() * 80
-      : margin + Math.random() * 80;
-    let newY = (clientY < vh / 2)
-      ? vh - bh - margin - Math.random() * 80
-      : margin + Math.random() * 80;
- 
-    newX = Math.max(margin, Math.min(newX, vw - bw - margin));
-    newY = Math.max(margin, Math.min(newY, vh - bh - margin));
- 
+
+  function handleYes() { goTo('screen-2'); }
+
+  btnNo.addEventListener('mouseover', () => {
     btnNo.style.position = 'fixed';
-    btnNo.style.left  = newX + 'px';
-    btnNo.style.top   = newY + 'px';
-    btnNo.style.zIndex = 100;
-  }
- 
-  // Desktop: mouseenter
-  btnNo.addEventListener('mouseenter', e => escapeButton(e.clientX, e.clientY));
-  // Mobile: touchstart
-  btnNo.addEventListener('touchstart', e => {
-    const t = e.touches[0];
-    escapeButton(t.clientX, t.clientY);
-    e.preventDefault();
-  }, { passive: false });
- 
-  /* ================================================
-     TELA 1 — CLICOU EM SIM
-  ================================================ */
-  function handleYes() {
-    // Reseta posição do botão Não
-    btnNo.style.position = '';
-    btnNo.style.left = '';
-    btnNo.style.top  = '';
-    launchConfetti();
-    setTimeout(() => goTo('screen-2'), 900);
-  }
- 
-  /* ================================================
-     TELA 2 — AVANÇAR
-  ================================================ */
+    btnNo.style.left = Math.random() * 80 + 'vw';
+    btnNo.style.top = Math.random() * 80 + 'vh';
+  });
+
   function handleDate() {
-    const d = document.getElementById('date-input').value;
-    const t = document.getElementById('time-input').value;
-    if (!d || !t) {
-      shakeCard('screen-2');
-      return;
-    }
-    state.date = d;
-    state.time = t;
+    state.date = document.getElementById('date-input').value;
+    state.time = document.getElementById('time-input').value;
+    if(!state.date || !state.time) return alert('Preencha tudo!');
     goTo('screen-3');
   }
- 
-  function shakeCard(screenId) {
-    const card = document.querySelector(`#${screenId} .card`);
-    card.style.animation = 'none';
-    card.style.transform = 'translateX(-8px)';
-    setTimeout(() => card.style.transform = 'translateX(8px)', 80);
-    setTimeout(() => card.style.transform = 'translateX(-6px)', 160);
-    setTimeout(() => card.style.transform = 'translateX(0)', 240);
-  }
- 
-  /* ================================================
-     TELA 3 — SELECIONAR OPÇÃO
-  ================================================ */
+
   function selectOption(btn) {
-    const group = btn.dataset.group;
-    document.querySelectorAll(`.option-btn[data-group="${group}"]`)
-      .forEach(b => b.classList.remove('selected'));
+    document.querySelectorAll(`.option-btn[data-group="${btn.dataset.group}"]`).forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
-    state[group] = btn.innerText.trim();
+    state[btn.dataset.group] = btn.innerText;
   }
- 
- function handlePrefs() {
-    if (!state.food || !state.vibe) {
-      shakeCard('screen-3');
-      return;
-    }
+
+  function handlePrefs() {
+    if(!state.food || !state.vibe) return alert('Escolha as opções!');
     
-    // 1. Monta o resumo visual na tela
-    buildSummary();
+    const msg = `Aceitei o convite! Data: ${state.date} às ${state.time}. Escolhi: ${state.food} e ${state.vibe}`;
+    const url = `https://wa.me/5511973513832?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
     
-    // 2. Prepara a mensagem para o WhatsApp
-    const dateObj = new Date(state.date + 'T' + state.time);
-    const dateStr = dateObj.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
-    const timeStr = dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-    const mensagem = `Oi! Aceitei o convite! 🎉\n\n` +
-                     `📅 Dia: ${dateStr}\n` +
-                     `⏰ Horário: ${timeStr}\n` +
-                     `🍽️ Comida: ${state.food}\n` +
-                     `📍 Vibe: ${state.vibe}\n\n` +
-                     `Mal posso esperar! 💕`;
-
-    // 3. Substitua o número abaixo pelo seu (com DDD, sem espaços ou traços)
-    // Exemplo: 5511999999999 (o 55 é o código do Brasil)
-    const meuNumero = '5511973513832'; 
-    const urlWhatsApp = `https://wa.me/${meuNumero}?text=${encodeURIComponent(mensagem)}`;
-
-    // 4. Abre o WhatsApp após um pequeno atraso para ela ver a tela de sucesso
-    setTimeout(() => {
-        window.open(urlWhatsApp, '_blank');
-    }, 1500);
-
+    document.getElementById('summary-content').innerHTML = `<p>${msg}</p>`;
     goTo('screen-4');
-    startHeartsRain();
-  }
-    }
-    buildSummary();
-    goTo('screen-4');
-    startHeartsRain();
-  }
- 
-  /* ================================================
-     TELA 4 — MONTAR RESUMO
-  ================================================ */
-  function buildSummary() {
-    const dateObj = new Date(state.date + 'T' + state.time);
-    const dateStr = dateObj.toLocaleDateString('pt-BR', {
-      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-    });
-    const timeStr = dateObj.toLocaleTimeString('pt-BR', {
-      hour: '2-digit', minute: '2-digit'
-    });
- 
-    document.getElementById('summary-content').innerHTML = `
-      <div class="summary-row">
-        <span class="summary-icon">📅</span>
-        <div class="summary-detail">
-          <strong>Dia</strong>
-          <span>${dateStr}</span>
-        </div>
-      </div>
-      <div class="summary-row">
-        <span class="summary-icon">⏰</span>
-        <div class="summary-detail">
-          <strong>Horário</strong>
-          <span>${timeStr}</span>
-        </div>
-      </div>
-      <div class="summary-row">
-        <span class="summary-icon">🍽️</span>
-        <div class="summary-detail">
-          <strong>Comida escolhida</strong>
-          <span>${state.food}</span>
-        </div>
-      </div>
-      <div class="summary-row">
-        <span class="summary-icon">📍</span>
-        <div class="summary-detail">
-          <strong>A vibe</strong>
-          <span>${state.vibe}</span>
-        </div>
-      </div>
-    `;
-  }
- 
-  /* ================================================
-     EFEITO DE CONFETES (Canvas)
-  ================================================ */
-  const canvas = document.getElementById('fx-canvas');
-  const ctx    = canvas.getContext('2d');
-  let particles = [];
-  let animId   = null;
- 
-  function resizeCanvas() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
- 
-  const CONFETTI_COLORS = [
-    '#f472b6','#a855f7','#fb923c','#facc15','#34d399','#60a5fa','#f9a8d4','#c084fc'
-  ];
- 
-  function launchConfetti() {
-    particles = [];
-    const count = 120;
-    for (let i = 0; i < count; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: -10,
-        r: Math.random() * 6 + 4,
-        color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
-        vx: (Math.random() - 0.5) * 3,
-        vy: Math.random() * 3 + 2,
-        angle: Math.random() * 360,
-        spin: (Math.random() - 0.5) * 6,
-        shape: Math.random() < 0.5 ? 'rect' : 'circle',
-        life: 1
-      });
-    }
-    if (animId) cancelAnimationFrame(animId);
-    drawConfetti();
-  }
- 
-  function drawConfetti() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles = particles.filter(p => p.life > 0.05);
-    particles.forEach(p => {
-      ctx.save();
-      ctx.globalAlpha = p.life;
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.angle * Math.PI / 180);
-      ctx.fillStyle = p.color;
-      if (p.shape === 'rect') ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r);
-      else {
-        ctx.beginPath();
-        ctx.arc(0, 0, p.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-      p.x += p.vx;
-      p.y += p.vy;
-      p.angle += p.spin;
-      p.vy += 0.07;
-      p.life -= 0.008;
-    });
-    if (particles.length) animId = requestAnimationFrame(drawConfetti);
-    else { ctx.clearRect(0, 0, canvas.width, canvas.height); animId = null; }
-  }
- 
-  /* ================================================
-     CHUVA DE CORAÇÕES FLUTUANTES (Tela 4)
-  ================================================ */
-  const HEARTS = ['💕','💖','💗','💓','💝','🩷','❤️','✨'];
-  let heartInterval = null;
- 
-  function startHeartsRain() {
-    if (heartInterval) clearInterval(heartInterval);
-    // Limpa corações antigos
-    document.querySelectorAll('.heart-float').forEach(h => h.remove());
- 
-    heartInterval = setInterval(() => {
-      if (!document.getElementById('screen-4').classList.contains('active')) {
-        clearInterval(heartInterval);
-        return;
-      }
-      const el = document.createElement('span');
-      el.className = 'heart-float';
-      el.textContent = HEARTS[Math.floor(Math.random() * HEARTS.length)];
-      el.style.left  = Math.random() * 100 + 'vw';
-      el.style.bottom = '-10px';
-      const dur = (Math.random() * 4 + 4).toFixed(1);
-      el.style.animationDuration = dur + 's';
-      el.style.fontSize = (Math.random() * 1.2 + 0.8).toFixed(1) + 'rem';
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), parseFloat(dur) * 1000 + 200);
-    }, 300);
   }
 </script>
 </body>
