@@ -566,10 +566,40 @@
     state[group] = btn.innerText.trim();
   }
  
-  function handlePrefs() {
+ function handlePrefs() {
     if (!state.food || !state.vibe) {
       shakeCard('screen-3');
       return;
+    }
+    
+    // 1. Monta o resumo visual na tela
+    buildSummary();
+    
+    // 2. Prepara a mensagem para o WhatsApp
+    const dateObj = new Date(state.date + 'T' + state.time);
+    const dateStr = dateObj.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+    const timeStr = dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+    const mensagem = `Oi! Aceitei o convite! 🎉\n\n` +
+                     `📅 Dia: ${dateStr}\n` +
+                     `⏰ Horário: ${timeStr}\n` +
+                     `🍽️ Comida: ${state.food}\n` +
+                     `📍 Vibe: ${state.vibe}\n\n` +
+                     `Mal posso esperar! 💕`;
+
+    // 3. Substitua o número abaixo pelo seu (com DDD, sem espaços ou traços)
+    // Exemplo: 5511999999999 (o 55 é o código do Brasil)
+    const meuNumero = '5511973513832'; 
+    const urlWhatsApp = `https://wa.me/${meuNumero}?text=${encodeURIComponent(mensagem)}`;
+
+    // 4. Abre o WhatsApp após um pequeno atraso para ela ver a tela de sucesso
+    setTimeout(() => {
+        window.open(urlWhatsApp, '_blank');
+    }, 1500);
+
+    goTo('screen-4');
+    startHeartsRain();
+  }
     }
     buildSummary();
     goTo('screen-4');
